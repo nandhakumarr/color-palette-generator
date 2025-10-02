@@ -3,7 +3,6 @@
 </script>
 
 <template lang="pug">
-h3 Color Palette Generator
 color-palette
 </template>
 

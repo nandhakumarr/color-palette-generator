@@ -16,6 +16,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "color": "^5.0.2",
     "pinia": "^3.0.3",
     "simpler-color": "^1.0.2",
     "vue": "^3.5.22",
