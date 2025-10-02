@@ -1,3 +1,4 @@
+import './main.sass'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
