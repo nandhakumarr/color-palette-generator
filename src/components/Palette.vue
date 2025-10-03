@@ -7,9 +7,11 @@
 <script setup>
   import { ref } from 'vue'
   import { lightness, harmony } from 'simpler-color'
-  import ColorVariant from './Variant.vue'
   import { generate } from '@/utils/generator.js'
   import { maxVariant } from '@/utils/max-variant.js'
+
+  import BezierCurve from './BezierCurve.vue'
+  import ColorVariant from './Variant.vue'
 
   const color = ref('#ff0000')
 
@@ -53,10 +55,49 @@
     LIGHTNESS_NEGATIVE: 0.1,
   })
 
-  function addVariant(variant) {
-    const colors = generate[variant](color.value, ratios[variant], palette[variant].length)
-    if (!maxVariant[variant](colors, palette[variant][palette[variant].length - 1]))
-      palette[variant].push(colors)
+  const count = reactive({
+    TINT: 0,
+    TONE: 0,
+    SHADE: 0,
+    SATURATION: 0,
+    DESATURATION: 0,
+    LIGHTNESS: 0,
+    LIGHTNESS_NEGATIVE: 0,
+  })
+
+  const max = computed(() => {
+    const max = {}
+    Object.keys(palette).forEach(variant => {
+      const colors = generate[variant](color.value, ratios[variant], palette[variant].length)
+      max[variant] = maxVariant[variant](colors, palette[variant][palette[variant].length - 1]) || false
+    })
+    return { ...max }
+  })
+
+  // function addVariant(variant) {
+  //   genVariants(variant, count[variant] + 1)
+  // }
+
+  // function genVariants(variant, variantCount) {
+  //   const ratio = ratios[variant]
+  //   if (!max.value[variant]) return
+  //   count[variant]++
+  //   for (let i = 0; i < variantCount; i++) {
+  //     //
+  //   }
+  // }
+
+  async function addVariant(variant) {
+    let _maxVariant = false
+    palette[variant] = []
+    count[variant] = 0
+    while(!_maxVariant) {
+      await nextTick()
+      const _color = generate[variant](color.value, ratios[variant], palette[variant].length)
+      palette[variant].push(_color)
+      count[variant]++
+      _maxVariant = maxVariant[variant](_color, palette[variant][palette[variant].length - 1])
+    }
   }
 
   watch(() => color.value, () => {
@@ -64,6 +105,9 @@
       palette[key] = []
     })
   })
+
+  const controlPoint1 = ref({ x: 0, y: 0 })
+  const controlPoint2 = ref({ x: 80, y: 80 })
 </script>
 
 <template lang="pug">
@@ -76,10 +120,21 @@
       h1 {{ color || 'No color selected' }}
 
   .palette
+    //- p {{ controlPoint1 }}
+    //- p {{ controlPoint2 }}
+    //- bezier-curve(
+      :startPoint="{ x: 0, y: 100 }"
+      v-model:controlPoint1="controlPoint1"
+      v-model:controlPoint2="controlPoint2"
+      :endPoint="{ x: 100, y: 0 }"
+      strokeColor="blue"
+      :strokeWidth="2")
+
+
     .variants
       .variant(v-for="variant in variants" :key="variant.code" @click="selectedVariant = variant.code" :class="{ active: selectedVariant === variant.code }")
         header
-          h4 {{ variant.label }}
+          h4 {{ variant.label }} [{{ count[variant.code] }}]
           input(type="range" min="0.025" max="1.0" v-model="ratios[variant.code]" step="0.025")
           span {{ ratios[variant.code] * 100 }}%
         color-variant(:variants="palette[variant.code]" @add="addVariant(variant.code)")
