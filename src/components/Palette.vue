@@ -106,8 +106,8 @@
     })
   })
 
-  const controlPoint1 = ref({ x: 0, y: 0 })
-  const controlPoint2 = ref({ x: 80, y: 80 })
+  const controlPoint1 = ref({ x: 0.2, y: 0.2 })
+  const controlPoint2 = ref({ x: 0.8, y: 0.8 })
 </script>
 
 <template lang="pug">
@@ -120,13 +120,13 @@
       h1 {{ color || 'No color selected' }}
 
   .palette
-    //- p {{ controlPoint1 }}
-    //- p {{ controlPoint2 }}
-    //- bezier-curve(
-      :startPoint="{ x: 0, y: 100 }"
+    p {{ controlPoint1 }}
+    p {{ controlPoint2 }}
+    bezier-curve(
+      :startPoint="{ x: 0, y: 0 }"
       v-model:controlPoint1="controlPoint1"
       v-model:controlPoint2="controlPoint2"
-      :endPoint="{ x: 100, y: 0 }"
+      :endPoint="{ x: 1, y: 1 }"
       strokeColor="blue"
       :strokeWidth="2")
 
