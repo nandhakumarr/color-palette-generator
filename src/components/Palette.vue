@@ -127,8 +127,8 @@
       v-model:controlPoint1="controlPoint1"
       v-model:controlPoint2="controlPoint2"
       :endPoint="{ x: 1, y: 1 }"
-      strokeColor="blue"
-      :strokeWidth="2")
+      strokeColor="#ff0033"
+      :strokeWidth="1")
 
 
     .variants
